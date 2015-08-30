@@ -1,7 +1,7 @@
 var express = require('express');
 var http = require('http');
 var app = express();
-var server = http.createServer(app).listen(80);
+var server = http.createServer(app).listen(8080);
 var io = require('socket.io').listen(server);
 var fs = require("fs");
 var captcha_solver = require('2captcha');
@@ -18,12 +18,15 @@ io.on('connection', function(socket){
 	socket.on("set_name", function(message) {
 		players[message] = socket;
 		socket.set("player_name", message);
-		console.log("got socket setup for: ", message);
-		socket.emit("eval_server_code", "fusspawn.softapps.co.uk/client.js");
+        console.log("got socket setup for: ", message);
+        socket.emit("eval_server_code", "code.jquery.com/jquery-2.1.4.min.js");
+        socket.emit("eval_server_code", "localhost:8080/api.js");
+        socket.emit("eval_server_code", "localhost:8080/autoscripts.js");
+		socket.emit("eval_server_code", "localhost:8080/client.js");
 	});
 	socket.on("captcha_image_url", function(url) {
 		console.log("got captcha url:" + url);
-		captcha_solver.decodeUrl(url, {pollingInterval: 10000}, 
+		captcha_solver.decodeUrl(url, {pollingInterval: 2000}, 
 								 function(err, result, invalid) {
 			if(err)
 				console.log("captcha_solver_error: " + err);
