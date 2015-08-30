@@ -1,0 +1,16 @@
+{
+  "name": "fubot",
+  "version": "1.0.0",
+  "description": "basic automation tool for rpg.mo.ee",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "fusspawn",
+  "license": "ISC",
+  "dependencies": {
+    "2captcha": "^1.0.11",
+    "express": "^4.13.3",
+    "socket.io": "0.9.16"
+  }
+}
