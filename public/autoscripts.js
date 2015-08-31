@@ -26,7 +26,16 @@
             }
         }
     },
-    MineData: {current_node: null},
+    MineData: {
+        current_node: null, 
+        ore_names: [
+                        "Iron Vein",
+                        "Coal"
+                   ],
+        get_ore_name: function() {
+            return AutoScripts.MineData.ore_names[Math.floor(Math.random()*AutoScripts.MineData.ore_names.length)];
+        }
+    },
     Mine: function () {
         if (API.World.get_map_id() === 0) //Aboveground
         {
@@ -63,11 +72,64 @@
                 return;
             } else {
                 if(AutoScripts.MineData.current_node == null)
-                    AutoScripts.MineData.current_node = API.World.find_closest_by_name("Coal", true);
+                    AutoScripts.MineData.current_node = API.World.find_closest_by_name(AutoScripts.MineData.get_ore_name(), true);
                 if (AutoScripts.MineData.current_node)
                     API.World.mine(AutoScripts.MineData.current_node);
                 return;
             }
         }
-    }
+    },
+    CombatData: {
+        MobNames: ["Orc Mage", "Bronze Golem"]
+    },
+    Combat: function() {
+        if(Inventory.is_full(players[0]) && API.World.find_closest_by_name("Chest") !== null) {
+            var chest_node = API.World.find_closest_by_name("Chest");            
+            if(API.World.distance_to(chest_node) > 1)
+                API.World.move_to(chest_node);
+            else
+                API.Inventory.inv_check();
+        } else {
+            var target = API.World.find_attackables(AutoScripts.CombatData.MobNames);
+            if(target)
+                API.World.try_move_and_kill(target);
+            else 
+                addChatText("Awaiting new Targets!");
+        }
+    },
+    SteelForge: function () {
+        if (API.Inventory.inv_count_by_name("Iron Ore") < 1 
+            || API.Inventory.inv_count_by_name("Coal") < 1) {
+            if (API.Inventory.inv_count_by_name("Steel Bar") > 0) {
+                addChatText("Depositing");
+                API.Inventory.manage_inventory();
+            } else {
+                var halfspace = Math.floor(API.Inventory.inv_free_space() / 2);
+                addChatText("Withdrawing " + API.Inventory.inv_free_space() + " Iron Items");
+                API.Inventory.withdraw(API.DB.search_item_base("Iron Ore").b_i, halfspace);
+                
+                addChatText("Withdrawing " + API.Inventory.inv_free_space() + " Coal Items");
+                API.Inventory.withdraw(API.DB.search_item_base("Coal").b_i, halfspace);
+            }
+        } else {
+            if (!API.Inventory.inv_is_equipped("Iron Ore")
+             || !API.Inventory.inv_is_equipped("Coal")) {                 
+                addChatText("Equipping");
+                API.Inventory.inv_equip_by_name("Iron Ore");                
+                API.Inventory.inv_equip_by_name("Coal");               
+                
+            } else {
+                var forge = API.World.find_closest_by_name("Furnace");
+                if (API.World.distance_to(forge) == 1) {
+                    addChatText("Forging");
+                    Socket.send("use_skill", {
+                        target_id : forge.id
+                    });
+                } else {
+                    addChatText("Moving to");
+                    API.World.move_to(forge);
+                }
+            }
+        }
+    },
 }

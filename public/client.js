@@ -6,18 +6,6 @@ if (window.UIInstalled) {
 if (bot_interval) {
     clearTimeout(bot_interval);
 }
-document.getElementById("settings").innerHTML += "<div id='botcontrols'><hr/> <h2> <center> Fubot <center/> </h2></div>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='keep_running_option'><input type='checkbox' id='run_fu_script'> Run Auto </input></span>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='mining_bot_option'><input type='checkbox' id='run_mine_script'> Run Miner </input></span>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='combat_bot_option'><input type='checkbox' id='run_combat_script'> Run Combat </input></span>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='combat_bot_option'><input type='checkbox' id='run_smelter_script'> Run Smelter </input></span>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='combat_targets_option'><input type='text' id='combat_target_string'>  </input></span>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='location_option'><input type='button' id='dump_location_button' onclick='javascript: dump_location();' value='Dump Location'> </input></span>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='combat_bot_option'><input type='checkbox' id='run_path_recorder_script'> Run Path Recorder </input></span>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='location_option'><input type='button' id='dump_path_button' onclick='javascript: DumpPath();' value='Dump Path'> </input></span>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='location_option'><input type='button' id='dump_path_button' onclick='javascript: ClearPath();' value='Clear Path'> </input></span>";
-document.getElementById("botcontrols").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='location_option'><input type='button' id='dump_path_button' onclick='javascript: RunTestPath();' value='Run Back Path'> </input></span>";
-window.UIInstalled = true;
 
 function ui_keep_going() {
     return document.getElementById("run_fu_script").checked;
@@ -52,7 +40,9 @@ function bot_tick() {
         var p = players[0];
         if (!p.temp.busy && p.path.length === 0 && p.temp.health > 10 && !map_change_in_progress) {
             try {
-                if (ui_option_checked("run_mine_script")) {
+                if(ui_option_checked("run_combat_script"))
+                    AutoScripts.Combat();
+                else if (ui_option_checked("run_mine_script")) {
                     AutoScripts.Mine();
                 } else if (ui_option_checked("run_path_recorder_script")) {
                     PathRecord();
@@ -60,6 +50,8 @@ function bot_tick() {
                     return;
                 } else if (ui_option_checked("run_smelter_script")) {
                     AutoScripts.Forge();
+                } else if (ui_option_checked("run_steel_smelter_script")) {
+                    AutoScripts.SteelForge();
                 }
             } catch (err) {
                 addChatText("Error: " + err);
@@ -114,10 +106,6 @@ function DumpPath() {
     addChatText(JSON.stringify(path_record));
 }
 
-bot_socket.removeListener("captcha_response", CaptureResponse);
-bot_socket.on("captcha_response", CaptureResponse);
-addChatText("AntiDetectHandler - Added");
-addChatText("Fubot Installed");
 
 
 

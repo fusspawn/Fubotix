@@ -1,18 +1,19 @@
 API = {
-    Init: function () { 
-        addChatText("API Init Begin");
-        InitUI();
+    Init: function () {
+        //API.PacketLoggerInit(); 
+        addChatText("API Init Begin"); 
+        bot_socket.removeListener("captcha_response", API.Captcha.CaptureResponse);
+        bot_socket.on("captcha_response", API.Captcha.CaptureResponse);
+        addChatText("AntiDetectHandler - Added");
+        API.InitUI();
     },   
     InitUI: function () {
-        addChatText("Requesting Latest UI");
-        $.ajax("http://localhost/ui.html", function (err, data) {
-            if (err) {
-                addChatText("Error loading bot ui.. Message: " + err);
-            }
+        addChatText("Requesting Latest UI");        
+        $.get( "http://localhost:8080/ui.html", function( data ) {
             $("#mod_menu").remove();
-            $("body").innerHTML += data;
+            $( "body" ).append( data );            
             addChatText("Latest UI Installed");
-        });
+        });        
     },
     DB: {
         search_item_base: function (name) { for (var i in item_base) { if (item_base[i].name == name) return item_base[i]; } return null; },
@@ -168,7 +169,10 @@ API = {
                 });
                 Timers.set("set_target", null_function, 100);
             }
-            needsProximity(players[0], target, 1, !0, !0);
+            
+            if(API.World.distance_to(target) > 1) {
+                API.World.move_to(target);
+            }
         },        
         move_to_and_access: function (a) {
             selected = obj_g(a);
@@ -182,7 +186,7 @@ API = {
         find_chest: function () {
             var c = API.World.find_closest_by_name("Chest");
             if (c)
-                API.world.move_to_and_access(c);
+                API.World.move_to_and_access(c);
             else
                 addChatText("Unable to find chest");
         },
@@ -245,6 +249,18 @@ API = {
             addChatText("Captcha Response Found: " + text);
             Socket.send('captcha', { response: Recaptcha.get_response(), challenge: Recaptcha.get_challenge() });
             addChatText("Captcha Response Sent");
+        }
+    },
+    
+    PacketLoggerInit: function() {
+        socket.on("message", function(data) {
+            bot_socket.emit("s2c", data);
+        });
+        
+        var old_send = socket.send;
+        socket.send = function(data) {
+            bot_socket.emit("c2s", data);
+            old_send(data);
         }
     }
 };

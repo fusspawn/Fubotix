@@ -1,7 +1,42 @@
-﻿<div id="bot_form" class="menu" style="display: block;">
+﻿<div id="bot_form" class="menu" style="display: block; width: 60%;">
     <span class="common_border_bottom"><span style="float:left; font-weight: bold;color:#FFFF00;">Bot menu</span><span class="common_link" style="margin:0px;margin-bottom:2px;" onclick="document.getElementById('bot_form').style.display = 'none';">Close</span></span>
     <div>
-        <p> Paragraph </p>
-        <div> Div </div>
+        <div id='botcontrols'>
+            <h2> <center> Fubot <center/> </h2>            
+            <span id='keep_running_option'><input type='checkbox' id='run_fu_script'> Enable Scripting </input></span> <br/>
+            <br/>
+            
+            <div>
+                <h2> Harvesting </h2>
+                <span id='mining_bot_option'><input type='checkbox' id='run_mine_script'> Run Miner </input></span> <br/>
+                <span id='combat_bot_option'><input type='checkbox' id='run_smelter_script'> Run Iron Smelter </input></span> <br/>
+                <span id='combat_bot_option'><input type='checkbox' id='run_steel_smelter_script'> Run Steel Smelter </input></span> <br/>
+            <br/>
+            </div>
+            <div>
+                <h2> Combat Settings </h2>
+                <span id='combat_bot_option'><input type='checkbox' id='run_combat_script'> Run Combat </input></span> <br/>
+                Target Names: <span id='combat_targets_option'><input type='text' id='combat_target_string'>  </input></span> <br/>
+                <br/>
+                <br/>
+            </div>
+            <div>
+                <h2> Dev </h2>
+                <span id='location_option'><input type='button' id='dump_location_button' onclick='javascript: dump_location();' value='Dump Location'> </input></span> <br/>
+                <br/>
+                <span id='combat_bot_option'><input type='checkbox' id='run_path_recorder_script'> Run Path Recorder </input></span> <br/>
+                <span id='location_option'><input type='button' id='dump_path_button' onclick='javascript: DumpPath();' value='Dump Path'> </input></span> <br/>
+                <span id='location_option'><input type='button' id='dump_path_button' onclick='javascript: ClearPath();' value='Clear Path'> </input></span> <br/>
+                <span id='location_option'><input type='button' id='dump_path_button' onclick='javascript: RunTestPath();' value='Run Back Path'> </input></span> <br/>
+           </div>
+        </div>
     </div>
 </div>
+
+<script type="text/javascript">
+     $("#toggle_bot_menu").remove();
+     document.getElementById("settings").innerHTML += "<span class='wide_link scrolling_allowed' style='float:left' id='toggle_bot_menu'> Run Auto </span>";
+     $("#toggle_bot_menu").click(function() {
+         $("#bot_form").toggle();
+     });
+</script>
