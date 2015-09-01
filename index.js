@@ -39,6 +39,10 @@ io.on('connection', function(socket){
 		});
 	});
 	
+	socket.on("hi", function(data) {
+		socket.emit("hi", data);
+	});
+	
 	var message_seq_id = 0;
 	socket.on("s2c", function(message) {
 		message["sequence_id"] = message_seq_id;
